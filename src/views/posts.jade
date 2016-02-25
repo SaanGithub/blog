@@ -1,0 +1,73 @@
+include mixins
+
+doctype
+html( lang="en" )
+	head
+		title Blog application
+		meta( charset='utf-8' )
+		meta( http-equiv='X-UA-Compatible', content='IE=edge' )
+		meta( name='viewport', content='width=device-width, initial-scale=1.0' )
+		meta( name='description', content='Baking Bootstrap Snippets with Jade' )
+		
+		link(href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.0/flatly/bootstrap.min.css", rel="stylesheet")
+		link(rel='stylesheet', type='text/css', href='style.css')
+			
+	body(style="padding-bottom:10rem;")
+		.container
+ 
+		script( src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js' )
+		script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
+		script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
+			
++nav("Blog", "dropdown_menu")
+	+nav_item( "index") Login
+	+nav_item( "profile" ) Profile
+
+	if data
+		+nav_item( "posts" ) Posts
+		+nav_item( "logout" ) Logout
+	else
+
+.row
+	.col-md-4.col-sm-6.col-xs-12
+		+panel("All Posts", "primary")
+			each post in data
+				ul 	
+					li title: #{post.title} 
+					li body: #{post.body}
+					li id: #{post.userid}
+					form(method="post", action="comment/new")
+						div.input
+							span.label Comment:
+							textarea(name="comment", cols="40", rows="2")
+
+	.col-md-4.col-sm-6.col-xs-12
+		+panel("Your Posts", "primary")
+				ul
+					li Title
+						ul
+						li Body
+						li Comment		
+
+
+	.col-md-4.col-sm-6.col-xs-12
+		+panel("Create a Post", "primary")
+			form(method="post", action='/posts/new')
+				div.input
+					span.label Title 
+					input(type="text", name="titleswag")
+				div.input
+					span.label 
+					p Message 
+					textarea(name="bodyswag", cols="40", rows="5")
+				div.actions
+					input#reload(type="submit", value="Add post")
+
++bootswatch("darkly")
+
+			script.
+				$(document).ready(function(){
+				$("#reload").click(function(){
+				location.reload(true);
+				});
+				});	
