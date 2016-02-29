@@ -11,16 +11,22 @@ html
 		meta( name='description', content='Baking Bootstrap Snippets with Jade' )
 		
 		link(href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.0/flatly/bootstrap.min.css", rel="stylesheet")
-			
+		link(href='https://fonts.googleapis.com/css?family=Raleway:400,800' rel='stylesheet' type='text/css')
 		script( src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js' )
 		script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
+		style.
+			body { overflow-x: hidden;}
+			.welcome {
+			font-family: 'Raleway', sans-serif;
+			font-size: 50px;
+			}
 	
 
-+nav("Blog", "dropdown_menu")
-	+nav_item( "index") Login
-	+nav_item( "profile" ) Profile
++nav("Blog", "dropdown_menu") 
+		+nav_item( "#") Login	
 
 	if user
+		+nav_item( "profile" ) Profile
 		+nav_item( "posts" ) Posts
 		+nav_item( "logout" ) Logout
 
@@ -41,9 +47,16 @@ html
 				br
 				br
 
+				h2= message
+	.col-md-4.col-sm-6.col-xs-12.text-center.pull-right
+		h3.welcome “I think of us as journalists; the medium we work in is blogging.” - Abraham Lincoln
+
 	.col-md-4.col-sm-6.col-xs-12.text-center.pull-right
 		+panel("Register", "primary")
 			form(action="/users/new", method="post")
+				br
+				input#user(type="searchbar", name="name", placeholder="name")
+				br
 				br
 				input#user(type="searchbar", name="email", placeholder="email")
 				br
@@ -51,8 +64,8 @@ html
 				input#password(type="searchbar", name="password", placeholder="password")
 				br
 				br
-				<input type="submit" value="Create User">
-				h2= message
+				input(type="submit" value="Create User")
+
 				
 +bootswatch("darkly")
 

@@ -11,7 +11,6 @@ var sequelize = new Sequelize('blog', 'postgres', null, {
 	}
 });
 
-
 // define tables
 
 var User = sequelize.define('user', {
@@ -21,16 +20,17 @@ var User = sequelize.define('user', {
 });
 
 var Post = sequelize.define('post', {
-	userid: Sequelize.INTEGER,
+	userId: Sequelize.INTEGER,
 	title: Sequelize.STRING,
 	body: Sequelize.TEXT,
+	author: Sequelize.STRING
 
 });
 
 var Comment = sequelize.define('comment', {
-	postid: Sequelize.INTEGER,
-	message: Sequelize.TEXT,
-	name: Sequelize.TEXT
+	postId: Sequelize.INTEGER,
+	body: Sequelize.TEXT,
+	author: Sequelize.STRING
 });
 
 // define relationships
@@ -50,11 +50,14 @@ app.use(session({
 app.set('views', './src/views');
 app.set('view engine', 'jade');
 
-
 // register/login user 
+app.get('/comments', function(request, response) {
+	response.render('comments')
+});
 
 app.get('/', function(request, response) {
 	response.render('index', {
+		post: request.query.post,
 		message: request.query.message,
 		user: request.session.user
 	});
@@ -64,6 +67,7 @@ app.post('/users/new', bodyParser.urlencoded({
 	extended: true
 }), function(request, response) {
 	User.create({
+		name: request.body.name,
 		email: request.body.email,
 		password: request.body.password
 	});
@@ -113,32 +117,23 @@ app.get('/logout', function(request, response) {
 app.post('/posts/new', bodyParser.urlencoded({
 	extended: true
 }), function(request, response) {
-
+	var user = request.session.user;
 
 	Post.create({
-		userid: request.session.user.id,
+		userId: request.session.user.id,
 		title: request.body.titleswag,
-		body: request.body.bodyswag
-	});
-	Post.findAll().then(function(posts) {
-		var data = posts.map(function(post) {
-			return {
-				userid: post.dataValues.userid,
-				title: post.dataValues.title,
-				body: post.dataValues.body
-			};
-		})
-		console.log("somethingelse");
-		response.render('posts', {
-			data: data
-
-		});
+		body: request.body.bodyswag,
+		author: request.session.user.name
 	})
+	response.render('posts');
 });
 
 
 app.get('/posts/:id', function(request, response) {
 	var user = request.session.user;
+	var id = request.session.user.id;
+	idpost = request.params.postid;
+	console.log(request.params.postid)
 	if (user === undefined) {
 		response.redirect('/?message=' + encodeURIComponent("Please log in to view your posts."));
 	} else {
@@ -148,37 +143,119 @@ app.get('/posts/:id', function(request, response) {
 			var data = posts.map(function(post) {
 				return {
 
-					userid: post.dataValues.userid,
+					userId: post.dataValues.userId,
 					title: post.dataValues.title,
-					body: post.dataValues.body
+					body: post.dataValues.body,
+					author: post.dataValues.author,
+					id: post.dataValues.id
+
 				};
 			})
+			allPosts = data;
+		}).then(Post.findAll({
+				where: {
+					userId: id
+				}
+			})
 
-			console.log("something");
+			.then(function(posts) {
+				var iets = posts.map(function(post) {
+
+					return {
+						userId: post.dataValues.userId,
+						title: post.dataValues.title,
+						body: post.dataValues.body,
+						author: post.dataValues.author,
+						id: post.dataValues.id
+					}
+
+				})
+				console.log("monkeys");
+				yourPosts = iets;
+			})).then(function() {
+
 			response.render('posts', {
-				data: data,
-				user: request.session.user
+				allPosts: allPosts,
+				yourPosts: yourPosts,
+				user: request.session.user,
+				idpost: idpost
 			});
 		})
 	}
 });
 
+app.get('/comments/:postid', function(request, response) {
+	var user = request.session.user;
+	
+	idpost = request.params.postid;
+	console.log(request.params.postid);
+	if (user === undefined) {
+		response.redirect('/?message=' + encodeURIComponent("Please log in to view your posts."));
+	} else {
 
-// Post.findAll().then(function (posts) {
-// 	var data = posts.map(function (post) {
-// 		return {
-// 			title: post.dataValues.title,
-// 			body: post.dataValues.body
-// 		};
-// 	});
+		Post.findAll({
+			where: {
+				id: idpost
+			}
+		})
 
-// 	console.log("printing results:");
-// 	console.log(data);});
+		.then(function(posts) {
+			var data = posts.map(function(post) {
 
-// verzamel data
-// conditie
-// verzamel data
-// redirect
+				return {
+					id: post.dataValues.id,
+					userId: post.dataValues.userId,
+					title: post.dataValues.title,
+					body: post.dataValues.body,
+					author: post.dataValues.author
+				}
+
+			})
+			console.log("squirtle");
+			commentPosts = data;
+		}).then(Comment.findAll({
+				where: {
+					postId: idpost
+				}
+			})
+
+			.then(function(posts) {
+				var data = posts.map(function(post) {
+
+					return {
+						author: post.dataValues.author,
+						body: post.dataValues.body,
+					}
+				})
+				console.log("bananas");
+				Comments = data;
+			})).then(function() {
+
+			response.render('comments', {
+				allPosts: allPosts,
+				commentPosts: commentPosts,
+				Comments: Comments,
+				user: request.session.user,
+				idpost: idpost
+
+			});
+		})
+	}
+});
+
+app.post('/comments/new/:postid', bodyParser.urlencoded({
+	extended: true
+}), function(request, response) {
+	idpost = request.params.postid;
+	console.log(request.params.postid);
+	Comment.create({
+		postId: idpost,
+		body: request.body.comment,
+		author: request.session.user.name
+	})
+	response.render('comments');
+});
+
 
 sequelize.sync().then(function() {
 	var server = app.listen(3000, function() {

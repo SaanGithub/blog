@@ -10,7 +10,7 @@ html( lang="en" )
 		meta( name='description', content='Baking Bootstrap Snippets with Jade' )
 		
 		link(href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.0/flatly/bootstrap.min.css", rel="stylesheet")
-		link(rel='stylesheet', type='text/css', href='style.css')
+		link(href='/css/style.css', rel='stylesheet', type='text/css')
 			
 	body(style="padding-bottom:10rem;")
 		.container
@@ -18,10 +18,12 @@ html( lang="en" )
 		script( src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js' )
 		script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
 		script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
+		style.
+			body { overflow-x: hidden;}
 			
 +nav("Blog", "dropdown_menu")
-	+nav_item( "index") Login
-	+nav_item( "profile" ) Profile
+	+nav_item( "/users/profile") Login
+	+nav_item( "/users/profile" ) Profile
 
 	if data
 		+nav_item( "posts" ) Posts
@@ -31,23 +33,26 @@ html( lang="en" )
 .row
 	.col-md-4.col-sm-6.col-xs-12
 		+panel("All Posts", "primary")
-			each post in data
+			each post in allPosts
 				ul 	
+					li name: #{post.author}
 					li title: #{post.title} 
 					li body: #{post.body}
-					li id: #{post.userid}
-					form(method="post", action="comment/new")
-						div.input
-							span.label Comment:
-							textarea(name="comment", cols="40", rows="2")
+					li postid: #{post.id}
+					a(href='/comments/' + post.id) Double click to create a comment						
+
+
 
 	.col-md-4.col-sm-6.col-xs-12
 		+panel("Your Posts", "primary")
-				ul
-					li Title
-						ul
-						li Body
-						li Comment		
+			each post in yourPosts
+				ul 	
+					li name: #{post.author}
+					li title: #{post.title} 
+					li body: #{post.body}
+					li postid: #{post.id}
+					a(href='/comments/' + post.id) Double click to create a comment					
+
 
 
 	.col-md-4.col-sm-6.col-xs-12
@@ -61,13 +66,14 @@ html( lang="en" )
 					p Message 
 					textarea(name="bodyswag", cols="40", rows="5")
 				div.actions
-					input#reload(type="submit", value="Add post")
+					input(type="submit", value="Add post")
+
 
 +bootswatch("darkly")
 
 			script.
 				$(document).ready(function(){
-				$("#reload").click(function(){
+				$(":submit").click(function(){
 				location.reload(true);
 				});
 				});	

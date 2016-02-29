@@ -10,7 +10,7 @@ html( lang="en" )
 		meta( name='description', content='Baking Bootstrap Snippets with Jade' )
 		
 		link(href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.0/flatly/bootstrap.min.css", rel="stylesheet")
-		link(href='/css/style.css', rel='stylesheet', type='text/css')
+
 			
 	body(style="padding-bottom:10rem;")
 		.container
@@ -20,10 +20,6 @@ html( lang="en" )
 		script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
 		style.
 			body { overflow-x: hidden;}
-			.profile{
-			font-family: 'Raleway', sans-serif;
-			font-size: 30px;
-			}
 			
 +nav("Blog", "dropdown_menu")
 	+nav_item( "/users/profile") Login
@@ -34,15 +30,32 @@ html( lang="en" )
 		+nav_item( "logout" ) Logout
 	else
 
-.jumbotron
-	h1 Welcome #{user.name}
-		br
-		a.profile(href='/users/profile') Home
-		br
-		a.profile(href='/logout') Log out
-		br
-		a.profile(href='/posts/' + user.id) Double click to create a post
-
-
+.row
+	.col-md-4.col-sm-6.col-xs-12
+		+panel("Post", "primary")
+			each post in commentPosts
+				ul 	
+					li name: #{post.author}
+					li title: #{post.title} 
+					li body: #{post.body}
+				form(method="post", action='/comments/new/' + post.id)
+						div.input
+							span.label Comment:
+							textarea(name="comment", cols="40", rows="5")
+						div.actions
+							input(type="submit", value="Add comment")
+				br
+				br
+			each comment in Comments
+				ul 	
+					li name: #{comment.author}
+					li body: #{comment.body}
 
 +bootswatch("darkly")
+
+			script.
+				$(document).ready(function(){
+				$("#reload").click(function(){
+				location.reload(true);
+				});
+				});	
