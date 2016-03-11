@@ -3,6 +3,8 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var app = express();
+var fs = require('fs');
+
 var sequelize = new Sequelize('blog', 'postgres', null, {
 	host: 'localhost',
 	dialect: 'postgres',
@@ -51,10 +53,6 @@ app.set('views', './src/views');
 app.set('view engine', 'jade');
 
 // register/login user 
-app.get('/comments', function(request, response) {
-	response.render('comments')
-});
-
 app.get('/', function(request, response) {
 	response.render('index', {
 		post: request.query.post,
@@ -63,7 +61,7 @@ app.get('/', function(request, response) {
 	});
 });
 
-app.post('/users/new', bodyParser.urlencoded({
+app.post('/users', bodyParser.urlencoded({
 	extended: true
 }), function(request, response) {
 	User.create({
@@ -71,6 +69,7 @@ app.post('/users/new', bodyParser.urlencoded({
 		email: request.body.email,
 		password: request.body.password
 	});
+	response.redirect('/');
 });
 
 app.get('/users/:id', function(request, response) {
@@ -99,7 +98,7 @@ app.post('/login', bodyParser.urlencoded({
 			response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
 		}
 	}, function(error) {
-		response.redirect('/?message=' + encodeURIComponent("Invalid email or password.2"));
+		response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
 	});
 });
 
@@ -114,7 +113,8 @@ app.get('/logout', function(request, response) {
 
 // create/get posts
 
-app.post('/posts/new', bodyParser.urlencoded({
+
+app.post('/posts/', bodyParser.urlencoded({
 	extended: true
 }), function(request, response) {
 	var user = request.session.user;
@@ -125,15 +125,16 @@ app.post('/posts/new', bodyParser.urlencoded({
 		body: request.body.bodyswag,
 		author: request.session.user.name
 	})
-	response.render('posts');
+	response.redirect('users/' + user.id + '/posts');
 });
 
 
-app.get('/posts/:id', function(request, response) {
+app.get('/users/:id/posts', function(request, response) {
 	var user = request.session.user;
 	var id = request.session.user.id;
-	idpost = request.params.postid;
-	console.log(request.params.postid)
+	// idpost = request.params.postid;
+	// console.log('yesno')
+	// console.log(request.params.postid)
 	if (user === undefined) {
 		response.redirect('/?message=' + encodeURIComponent("Please log in to view your posts."));
 	} else {
@@ -178,15 +179,17 @@ app.get('/posts/:id', function(request, response) {
 				allPosts: allPosts,
 				yourPosts: yourPosts,
 				user: request.session.user,
-				idpost: idpost
+				post: request.session.post
+				// idpost: idpost
 			});
 		})
 	}
 });
 
-app.get('/comments/:postid', function(request, response) {
+app.get('/comments/users/:id/posts/:postid/', function(request, response) {
 	var user = request.session.user;
-	
+	// var post = request.session.post;
+	// console.log(request.session.post);
 	idpost = request.params.postid;
 	console.log(request.params.postid);
 	if (user === undefined) {
@@ -237,23 +240,23 @@ app.get('/comments/:postid', function(request, response) {
 				Comments: Comments,
 				user: request.session.user,
 				idpost: idpost
-
+				
 			});
 		})
 	}
 });
 
-app.post('/comments/new/:postid', bodyParser.urlencoded({
+app.post('/comments', bodyParser.urlencoded({
 	extended: true
 }), function(request, response) {
-	idpost = request.params.postid;
-	console.log(request.params.postid);
+	var user = request.session.user;
+	idpost = idpost;
 	Comment.create({
 		postId: idpost,
 		body: request.body.comment,
 		author: request.session.user.name
 	})
-	response.render('comments');
+	response.redirect('users/' + user.id + '/posts/' + idpost);
 });
 
 

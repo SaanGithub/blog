@@ -20,6 +20,11 @@ html( lang="en" )
 		script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
 		style.
 			body { overflow-x: hidden;}
+			ul{
+			list-style:none;
+			}
+			ul li.title{font-size: 30px;
+			color: #3E7683;}
 			
 +nav("Blog", "dropdown_menu")
 	+nav_item( "/users/profile") Login
@@ -35,11 +40,12 @@ html( lang="en" )
 		+panel("All Posts", "primary")
 			each post in allPosts
 				ul 	
-					li name: #{post.author}
-					li title: #{post.title} 
-					li body: #{post.body}
-					li postid: #{post.id}
-					a(href='/comments/' + post.id) Double click to create a comment						
+					li.author #{post.author}
+					br
+					li.title #{post.title}
+					li.body #{post.body}
+					
+					a(href='/comments/users/' + user.id + '/posts/'+ post.id ) Double click to create a comment						
 
 
 
@@ -47,17 +53,19 @@ html( lang="en" )
 		+panel("Your Posts", "primary")
 			each post in yourPosts
 				ul 	
-					li name: #{post.author}
-					li title: #{post.title} 
-					li body: #{post.body}
-					li postid: #{post.id}
-					a(href='/comments/' + post.id) Double click to create a comment					
+					li #{post.author}
+					br
+					li #{post.title}
+					br 
+					li.body #{post.body}
+					
+					a(href='/comments/users/' + user.id + '/posts/'+ post.id ) Double click to create a comment					
 
 
 
 	.col-md-4.col-sm-6.col-xs-12
 		+panel("Create a Post", "primary")
-			form(method="post", action='/posts/new')
+			form(method="post", action='/posts')
 				div.input
 					span.label Title 
 					input(type="text", name="titleswag")

@@ -38,7 +38,7 @@ html( lang="en" )
 					li name: #{post.author}
 					li title: #{post.title} 
 					li body: #{post.body}
-				form(method="post", action='/comments/new/' + post.id)
+				form(method="post", action='/comments/')
 						div.input
 							span.label Comment:
 							textarea(name="comment", cols="40", rows="5")
