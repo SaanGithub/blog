@@ -14,7 +14,6 @@ var sequelize = new Sequelize('blog', 'postgres', null, {
 });
 
 // define tables
-
 var User = sequelize.define('user', {
 	name: Sequelize.STRING,
 	email: Sequelize.STRING,
@@ -69,7 +68,7 @@ app.post('/users', bodyParser.urlencoded({
 		email: request.body.email,
 		password: request.body.password
 	});
-	response.redirect('/');
+	// response.redirect('/');
 });
 
 app.get('/users/:id', function(request, response) {
@@ -132,9 +131,7 @@ app.post('/posts/', bodyParser.urlencoded({
 app.get('/users/:id/posts', function(request, response) {
 	var user = request.session.user;
 	var id = request.session.user.id;
-	// idpost = request.params.postid;
-	// console.log('yesno')
-	// console.log(request.params.postid)
+
 	if (user === undefined) {
 		response.redirect('/?message=' + encodeURIComponent("Please log in to view your posts."));
 	} else {
@@ -171,7 +168,6 @@ app.get('/users/:id/posts', function(request, response) {
 					}
 
 				})
-				console.log("monkeys");
 				yourPosts = iets;
 			})).then(function() {
 
@@ -180,7 +176,6 @@ app.get('/users/:id/posts', function(request, response) {
 				yourPosts: yourPosts,
 				user: request.session.user,
 				post: request.session.post
-				// idpost: idpost
 			});
 		})
 	}
@@ -188,8 +183,6 @@ app.get('/users/:id/posts', function(request, response) {
 
 app.get('/comments/users/:id/posts/:postid/', function(request, response) {
 	var user = request.session.user;
-	// var post = request.session.post;
-	// console.log(request.session.post);
 	idpost = request.params.postid;
 	console.log(request.params.postid);
 	if (user === undefined) {
@@ -214,7 +207,6 @@ app.get('/comments/users/:id/posts/:postid/', function(request, response) {
 				}
 
 			})
-			console.log("squirtle");
 			commentPosts = data;
 		}).then(Comment.findAll({
 				where: {
@@ -230,7 +222,6 @@ app.get('/comments/users/:id/posts/:postid/', function(request, response) {
 						body: post.dataValues.body,
 					}
 				})
-				console.log("bananas");
 				Comments = data;
 			})).then(function() {
 
@@ -240,7 +231,7 @@ app.get('/comments/users/:id/posts/:postid/', function(request, response) {
 				Comments: Comments,
 				user: request.session.user,
 				idpost: idpost
-				
+
 			});
 		})
 	}
@@ -265,7 +256,3 @@ sequelize.sync().then(function() {
 		console.log('Example app listening on port: ' + server.address().port);
 	});
 });
-
-// Add alerts
-// Comment section
-//

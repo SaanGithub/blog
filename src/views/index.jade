@@ -51,7 +51,7 @@ html
 	.col-md-4.col-sm-6.col-xs-12.text-center.pull-right
 		h3.welcome “I think of us as journalists; the medium we work in is blogging.” - Abraham Lincoln
 
-	.col-md-4.col-sm-6.col-xs-12.text-center.pull-right
+	.col-md-4.col-sm-6.col-xs-12.text-center.pull-right.registercolumn
 		+panel("Register", "primary")
 			form(action="/users", method="post")
 				br
@@ -64,10 +64,23 @@ html
 				input#password(type="searchbar", name="password", placeholder="password")
 				br
 				br
-				input(type="submit" value="Create User")
+				input.register(type="submit" value="Create User")
+				br
+				span.target
+					+alert("default") User registered :-)
 
 				
 +bootswatch("darkly")
+
+script.
+	$( document ).ready(function() {
+		$( ".target").hide();
+		$( ".register" ).click(function() {
+		$( ".target" ).fadeIn( 1000 );
+		$( ".registercolumn" ).fadeOut( 5000 );
+	});
+
+	});
 
 
 	
