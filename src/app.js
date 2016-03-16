@@ -259,6 +259,6 @@ app.post('/comments', bodyParser.urlencoded({
 
 sequelize.sync().then(function() {
 	var server = app.listen(3000, function() {
-		console.log('Example app listening on port: ' + server.address().port);
+		console.log('App listening on port: ' + server.address().port);
 	});
 });
