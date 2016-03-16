@@ -10,7 +10,6 @@ html( lang="en" )
 		meta( name='description', content='Baking Bootstrap Snippets with Jade' )
 		
 		link(href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.0/flatly/bootstrap.min.css", rel="stylesheet")
-		link(href='/css/style.css', rel='stylesheet', type='text/css')
 			
 	body(style="padding-bottom:10rem;")
 		.container
@@ -26,12 +25,10 @@ html( lang="en" )
 			}
 			
 +nav("Blog", "dropdown_menu")
-	+nav_item( "/users/profile") Login
-	+nav_item( "/users/profile" ) Profile
 
-	if data
-		+nav_item( "posts" ) Posts
-		+nav_item( "logout" ) Logout
+	if user
+		+nav_item( user.id + "/posts" ) Posts
+		+nav_item( "/logout" ) Logout
 	else
 
 .jumbotron
@@ -41,7 +38,7 @@ html( lang="en" )
 		br
 		a.profile(href='/logout') Log out
 		br
-		a.profile(href='/users/' + user.id + '/posts') Double click to create a post
+		a.profile(href='/users/' + user.id + '/posts') Create a post
 
 
 

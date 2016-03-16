@@ -17,11 +17,17 @@ html( lang="en" )
 		script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
 
 		script.
-			$( document ).ready(function() {
-				$('#post').click(function() {
+				$( document ).ready(function() {
+					$('#post').click(function() {
 					console.log("Something");
+						$.post("/posts", Input,function(response) {
+							for(i = 0; i < response.yourPosts.length; i++) {
+								$('#list').append("<p id=" + i + ">" + response.yourPosts[i] + "</p>");
+								}		
+							});
+
+					});
 				});
-			});
 		style.
 			body { overflow-x: hidden;}
 			ul{
@@ -29,14 +35,14 @@ html( lang="en" )
 			}
 			ul li.title{font-size: 30px;
 			color: #3E7683;}
+			.author{ color: gray;}
+			.body{font-size: 20px;}
 			
 +nav("Blog", "dropdown_menu")
-	+nav_item( "/users/profile") Login
-	+nav_item( "/users/profile" ) Profile
 
-	if data
-		+nav_item( "posts" ) Posts
-		+nav_item( "logout" ) Logout
+	if user
+		+nav_item( user.id + "/users" ) Profile
+		+nav_item( "/logout" ) Logout
 	else
 
 .row
@@ -44,12 +50,13 @@ html( lang="en" )
 		+panel("All Posts", "primary")
 			each post in allPosts
 				ul 	
-					li.author #{post.author}
-					br
+					li.author by: #{post.author}
 					li.title #{post.title}
+					br
 					li.body #{post.body}
-					
-					a(href='/comments/users/' + user.id + '/posts/'+ post.id ) Double click to create a comment						
+					br
+					a(href='/comments/users/' + user.id + '/posts/'+ post.id ) Comment
+					br						
 
 
 
@@ -57,13 +64,14 @@ html( lang="en" )
 		+panel("Your Posts", "primary")
 			each post in yourPosts
 				ul 	
-					li #{post.author}
-					br
-					li #{post.title}
+					li.author by: #{post.author}
+					li.title #{post.title}
 					br 
 					li.body #{post.body}
-					
-					a(href='/comments/users/' + user.id + '/posts/'+ post.id ) Double click to create a comment					
+					br
+					p#list
+					a(href='/comments/users/' + user.id + '/posts/'+ post.id ) Comment	
+					br				
 
 
 

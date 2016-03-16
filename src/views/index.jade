@@ -11,7 +11,6 @@ html
 		meta( name='description', content='Baking Bootstrap Snippets with Jade' )
 		
 		link(href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.0/flatly/bootstrap.min.css", rel="stylesheet")
-		link(href='https://fonts.googleapis.com/css?family=Raleway:400,800' rel='stylesheet' type='text/css')
 		script( src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js' )
 		script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
 		style.
@@ -20,17 +19,13 @@ html
 			font-family: 'Raleway', sans-serif;
 			font-size: 50px;
 			}
+			.alert-dismissable, .alert-dismissible {
+			padding-right:6px !important;
+			}
 	
 
-+nav("Blog", "dropdown_menu") 
-		+nav_item( "#") Login	
++nav("Blog") 
 
-	if user
-		+nav_item( "profile" ) Profile
-		+nav_item( "posts" ) Posts
-		+nav_item( "logout" ) Logout
-
-	else
 
 .row
 	.col-md-4.col-sm-6.col-xs-12.text-center.pull-right
@@ -67,7 +62,7 @@ html
 				input.register(type="submit" value="Create User")
 				br
 				span.target
-					+alert("default") User registered :-)
+					+alert("default") 	Awesome!
 
 				
 +bootswatch("darkly")
@@ -76,8 +71,7 @@ script.
 	$( document ).ready(function() {
 		$( ".target").hide();
 		$( ".register" ).click(function() {
-		$( ".target" ).fadeIn( 1000 );
-		$( ".registercolumn" ).fadeOut( 5000 );
+		$( ".target" ).fadeIn( 5000 );
 	});
 
 	});

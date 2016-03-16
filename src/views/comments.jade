@@ -18,16 +18,34 @@ html( lang="en" )
 		script( src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js' )
 		script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
 		script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
+		script.
+				$( document ).ready(function() {
+					$('#post').click(function() {
+					console.log("Something");
+						$.post("/posts", Input,function(response) {
+							for(i = 0; i < response.yourPosts.length; i++) {
+								$('#list').append("<p id=" + i + ">" + response.yourPosts[i] + "</p>");
+								}		
+							});
+
+					});
+				});
+
 		style.
 			body { overflow-x: hidden;}
+			ul{
+			list-style:none;
+			}
+			ul li.title{font-size: 30px;
+			color: #3E7683;}
+			.author{ color: gray;}
+			.body{font-size: 20px;}
 			
 +nav("Blog", "dropdown_menu")
-	+nav_item( "/users/profile") Login
-	+nav_item( "/users/profile" ) Profile
 
-	if data
-		+nav_item( "posts" ) Posts
-		+nav_item( "logout" ) Logout
+	if user
+		+nav_item( user.id + "/users" ) Profile
+		+nav_item( "/logout" ) Logout
 	else
 
 .row
@@ -35,9 +53,10 @@ html( lang="en" )
 		+panel("Post", "primary")
 			each post in commentPosts
 				ul 	
-					li name: #{post.author}
-					li title: #{post.title} 
-					li body: #{post.body}
+					li.author by: #{post.author}
+					li.title #{post.title}
+					br 
+					li.body #{post.body}
 				form(method="post", action='/comments/')
 						div.input
 							span.label Comment:
@@ -46,10 +65,10 @@ html( lang="en" )
 							input(type="submit", value="Add comment")
 				br
 				br
-			each comment in Comments
+			each comment in postComments
 				ul 	
-					li name: #{comment.author}
-					li body: #{comment.body}
+					li.author by: #{comment.author}
+					li.body #{comment.body}
 
 +bootswatch("darkly")
 

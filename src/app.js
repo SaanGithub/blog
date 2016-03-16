@@ -68,7 +68,6 @@ app.post('/users', bodyParser.urlencoded({
 		email: request.body.email,
 		password: request.body.password
 	});
-	// response.redirect('/');
 });
 
 app.get('/users/:id', function(request, response) {
@@ -131,13 +130,55 @@ app.post('/posts/', bodyParser.urlencoded({
 app.get('/users/:id/posts', function(request, response) {
 	var user = request.session.user;
 	var id = request.session.user.id;
-
 	if (user === undefined) {
 		response.redirect('/?message=' + encodeURIComponent("Please log in to view your posts."));
 	} else {
 
 		Post.findAll().then(function(posts) {
+				var data = posts.map(function(post) {
+					return {
 
+						userId: post.dataValues.userId,
+						title: post.dataValues.title,
+						body: post.dataValues.body,
+						author: post.dataValues.author,
+						id: post.dataValues.id
+
+					};
+				})
+				allPosts = data;
+			}).then(
+
+				function findYourPosts() {
+
+					yourPosts = [];
+
+					for (i = 0; i < allPosts.length; i++) {
+						if (allPosts[i].userId === id) {
+							yourPosts.push(allPosts[i]);
+						}
+					}
+				}
+			)
+			.then(function() {
+				response.render('posts', {
+					allPosts: allPosts,
+					yourPosts: yourPosts,
+					user: request.session.user
+				});
+			})
+	}
+});
+
+app.get('/comments/users/:id/posts/:postid/', function(request, response) {
+	var user = request.session.user;
+	idpost = request.params.postid;
+	var id = request.session.user.id;
+	if (user === undefined) {
+		response.redirect('/?message=' + encodeURIComponent("Please log in to view your posts."));
+	} else {
+
+		Post.findAll().then(function(posts) {
 			var data = posts.map(function(post) {
 				return {
 
@@ -147,88 +188,54 @@ app.get('/users/:id/posts', function(request, response) {
 					author: post.dataValues.author,
 					id: post.dataValues.id
 
-				};
-			})
-			allPosts = data;
-		}).then(Post.findAll({
-				where: {
-					userId: id
 				}
 			})
+			allPosts = data;
+		}).then(
 
-			.then(function(posts) {
-				var iets = posts.map(function(post) {
+			function findComments() {
 
-					return {
-						userId: post.dataValues.userId,
-						title: post.dataValues.title,
-						body: post.dataValues.body,
-						author: post.dataValues.author,
-						id: post.dataValues.id
+				commentPosts = [];
+
+				for (i = 0; i < allPosts.length; i++) {
+					if (allPosts[i].id == idpost) {
+						commentPosts.push(allPosts[i]);
 					}
-
-				})
-				yourPosts = iets;
-			})).then(function() {
-
-			response.render('posts', {
-				allPosts: allPosts,
-				yourPosts: yourPosts,
-				user: request.session.user,
-				post: request.session.post
-			});
-		})
-	}
-});
-
-app.get('/comments/users/:id/posts/:postid/', function(request, response) {
-	var user = request.session.user;
-	idpost = request.params.postid;
-	console.log(request.params.postid);
-	if (user === undefined) {
-		response.redirect('/?message=' + encodeURIComponent("Please log in to view your posts."));
-	} else {
-
-		Post.findAll({
-			where: {
-				id: idpost
+				}
 			}
-		})
+		)
 
-		.then(function(posts) {
+		Comment.findAll().then(function(posts) {
 			var data = posts.map(function(post) {
 
 				return {
-					id: post.dataValues.id,
-					userId: post.dataValues.userId,
-					title: post.dataValues.title,
+					author: post.dataValues.author,
 					body: post.dataValues.body,
-					author: post.dataValues.author
-				}
-
-			})
-			commentPosts = data;
-		}).then(Comment.findAll({
-				where: {
-					postId: idpost
+					postId: post.dataValues.postId
 				}
 			})
+			Comments = data;
 
-			.then(function(posts) {
-				var data = posts.map(function(post) {
+		})
 
-					return {
-						author: post.dataValues.author,
-						body: post.dataValues.body,
+		.then(
+			function findPostComments() {
+				postComments = [];
+				for (i = 0; i < Comments.length; i++) {
+					if (Comments[i].postId == idpost) {
+						postComments.push(Comments[i]);
 					}
-				})
-				Comments = data;
-			})).then(function() {
+
+				}
+
+			})
+
+		.then(function() {
 
 			response.render('comments', {
 				allPosts: allPosts,
 				commentPosts: commentPosts,
-				Comments: Comments,
+				postComments: postComments,
 				user: request.session.user,
 				idpost: idpost
 
@@ -241,7 +248,6 @@ app.post('/comments', bodyParser.urlencoded({
 	extended: true
 }), function(request, response) {
 	var user = request.session.user;
-	idpost = idpost;
 	Comment.create({
 		postId: idpost,
 		body: request.body.comment,
