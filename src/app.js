@@ -4,8 +4,10 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var app = express();
 var fs = require('fs');
+var bcrypt = require('bcrypt');
 
-var sequelize = new Sequelize('blog', 'postgres', null, {
+
+var sequelize = new Sequelize('blog', process.env.POSTGRES_USER, null, {
 	host: 'localhost',
 	dialect: 'postgres',
 	define: {
@@ -18,6 +20,16 @@ var User = sequelize.define('user', {
 	name: Sequelize.STRING,
 	email: Sequelize.STRING,
 	password: Sequelize.STRING
+}, {
+	freezeTableName: true,
+	instanceMethods: {
+		generateHash: function(password) {
+			return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+		},
+		validPassword: function(password) {
+			return bcrypt.compareSync(password, this.password);
+		},
+	}
 });
 
 var Post = sequelize.define('post', {
@@ -63,14 +75,31 @@ app.get('/', function(request, response) {
 app.post('/users', bodyParser.urlencoded({
 	extended: true
 }), function(request, response) {
-	User.create({
-		name: request.body.name,
-		email: request.body.email,
-		password: request.body.password
-	});
-	response.redirect('/?message=' + encodeURIComponent("User successfully created, enter your userinfo.")); 
-});
 
+	if (request.body.name.length > 25 || request.body.email.length > 25) {
+		response.redirect('/?message=' + encodeURIComponent("Username and email should be below 25 charachters"))
+	} else {
+		User.create({
+			name: request.body.name,
+			email: request.body.email,
+			password: request.body.password
+
+				bcrypt.hash(passworded, 8, function(err, hash) {
+					if (err !== undefined) {
+						console.log(err);
+					} else {
+						console.log(hash);
+						gebruiker.create({
+							username: usernamed,
+							password: hash,
+							email: emailed
+						})
+					});
+			}
+			response.redirect('/?message=' + encodeURIComponent("User successfully created, enter your userinfo."));
+		});
+	};
+});
 app.get('/users/:id', function(request, response) {
 	var user = request.session.user;
 	if (user === undefined) {
@@ -89,15 +118,24 @@ app.post('/login', bodyParser.urlencoded({
 		where: {
 			email: request.body.email
 		}
-	}).then(function(user) {
-		if (user !== null && request.body.password === user.password ) {
-			request.session.user = user;
-			response.redirect('users/' + user.id);
-		} else {
-			response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
-		}
-	}, function(error) {
-		response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
+	}).then(function(username) {
+		var hashpassword = request.body.password;
+		bcrypt.compare(hashpassword, username.password.toString(), function(err, result) {
+			if (err !== undefined) {
+				console.log(err);
+			} else {
+				console.log(result)
+				if (username !== null && result === true) {
+					request.session.username = username;
+					response.redirect('/');
+				} else {
+					console.log("gaat iets fout")
+					response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
+				}
+			};
+		});
+
+
 	});
 });
 
