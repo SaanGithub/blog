@@ -10,26 +10,11 @@ html( lang="en" )
 		meta( name='description', content='Baking Bootstrap Snippets with Jade' )
 		
 		link(href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.0/flatly/bootstrap.min.css", rel="stylesheet")
-
-			
-	body(style="padding-bottom:10rem;")
-		.container
  
 		script( src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js' )
 		script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
 		script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
 		script.
-				$( document ).ready(function() {
-					$('#post').click(function() {
-					console.log("Something");
-						$.post("/posts", Input,function(response) {
-							for(i = 0; i < response.yourPosts.length; i++) {
-								$('#list').append("<p id=" + i + ">" + response.yourPosts[i] + "</p>");
-								}		
-							});
-
-					});
-				});
 
 		style.
 			body { overflow-x: hidden;}
@@ -41,10 +26,14 @@ html( lang="en" )
 			.author{ color: gray;}
 			.body{font-size: 20px;}
 			
+	body(style="padding-bottom:10rem;")
+		.container
+
+			
 +nav("Blog", "dropdown_menu")
 
 	if user
-		+nav_item( user.id + "/users" ) Profile
+		+nav_item( "/users/profile"  ) Profile
 		+nav_item( "/logout" ) Logout
 	else
 

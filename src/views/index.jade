@@ -3,7 +3,6 @@ include mixins
 doctype html
 html
 	head
-	body
 		title Blog application
 		meta( charset='utf-8' )
 		meta( http-equiv='X-UA-Compatible', content='IE=edge' )
@@ -22,7 +21,7 @@ html
 			.alert-dismissable, .alert-dismissible {
 			padding-right:6px !important;
 			}
-	
+	body
 
 +nav("Blog") 
 
@@ -56,27 +55,22 @@ html
 				input#user(type="searchbar", name="email", placeholder="email")
 				br
 				br
-				input#password(type="searchbar", name="password", placeholder="password")
+				input#password(type='password', name="password", placeholder="password")
 				br
 				br
 				input.register(type="submit" value="Create User")
 				br
 				span.target
-					+alert("default") 	Awesome!
+					//- +alert("default") 	Awesome!
 
 				
 +bootswatch("darkly")
 
-script.
-	$( document ).ready(function() {
-		$( ".target").hide();
-		$( ".register" ).click(function() {
-		$( ".target" ).fadeIn( 5000 );
-	});
+//- script.
+//- 	$( document ).ready(function() {
+//- 		$( ".target").hide();
+//- 		$( ".register" ).click(function() {
+//- 		$( ".target" ).fadeIn( 5000 );
+//- 	});
 
-	});
-
-
-	
-
-
+//- 	});

@@ -68,6 +68,7 @@ app.post('/users', bodyParser.urlencoded({
 		email: request.body.email,
 		password: request.body.password
 	});
+	response.redirect('/?message=' + encodeURIComponent("User successfully created, enter your userinfo.")); 
 });
 
 app.get('/users/:id', function(request, response) {
@@ -89,7 +90,7 @@ app.post('/login', bodyParser.urlencoded({
 			email: request.body.email
 		}
 	}).then(function(user) {
-		if (user !== null && request.body.password === user.password) {
+		if (user !== null && request.body.password === user.password ) {
 			request.session.user = user;
 			response.redirect('users/' + user.id);
 		} else {
@@ -115,6 +116,7 @@ app.get('/logout', function(request, response) {
 app.post('/posts/', bodyParser.urlencoded({
 	extended: true
 }), function(request, response) {
+
 	var user = request.session.user;
 
 	Post.create({
