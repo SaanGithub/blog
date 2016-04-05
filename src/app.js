@@ -79,25 +79,25 @@ app.post('/users', bodyParser.urlencoded({
 	if (request.body.name.length > 25 || request.body.email.length > 25) {
 		response.redirect('/?message=' + encodeURIComponent("Username and email should be below 25 charachters"))
 	} else {
-		User.create({
-			name: request.body.name,
-			email: request.body.email,
-			password: request.body.password
 
-				bcrypt.hash(passworded, 8, function(err, hash) {
+			var usernames = request.body.name;
+			var emails = request.body.email;
+			var passwords = request.body.password;
+
+				bcrypt.hash(passwords, 8, function(err, hash) {
 					if (err !== undefined) {
 						console.log(err);
 					} else {
 						console.log(hash);
-						gebruiker.create({
-							username: usernamed,
+						User.create({
+							username: usernames,
 							password: hash,
-							email: emailed
+							email: emails
 						})
-					});
-			}
+					};
+			})
 			response.redirect('/?message=' + encodeURIComponent("User successfully created, enter your userinfo."));
-		});
+
 	};
 });
 app.get('/users/:id', function(request, response) {
