@@ -113,7 +113,7 @@ app.get('/logout', function(request, response) {
 // create/get posts
 
 
-app.post('/posts/', bodyParser.urlencoded({
+app.post('/posts', bodyParser.urlencoded({
 	extended: true
 }), function(request, response) {
 
